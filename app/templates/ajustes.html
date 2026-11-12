@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% set active = 'ajustes' %}{% block title %}Ajustes{% endblock %}
+{% block body %}{% from "_ui.html" import ic, av %}
+<div class="page-head"><div><h1>Ajustes</h1><p class="sub">Cuenta de {{ user.username }}</p></div></div>
+<div class="grid">
+<div class="card"><h2>{{ ic('bell') }}Preferencias y avisos</h2>
+<form method="post" action="/ajustes"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label style="margin-top:0">Moneda en la que ver los totales</label><select name="base_currency">{% for c in currencies %}<option {{ 'selected' if c == user.base_currency }}>{{ c }}</option>{% endfor %}</select>
+<label>Email para avisos</label><input name="email" type="email" value="{{ user.email }}" maxlength="120" autocomplete="email" placeholder="tu@correo.com">
+<label style="margin-top:16px;color:var(--txt);font-size:15px;font-weight:450"><input type="checkbox" name="alerts_on" {{ 'checked' if user.alerts_on }}>Avisarme de renovaciones y fin de pruebas</label>
+<label>Avisar con (días de antelación)</label><input name="alert_days" type="number" min="0" max="30" value="{{ user.alert_days }}">
+<div class="actions" style="margin-top:18px"><button>{{ ic('check') }}Guardar</button></div></form>
+{% if smtp_ok and user.email %}<form method="post" action="/ajustes/probar-email" style="margin-top:10px"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="sec small">{{ ic('mail') }}Enviar email de prueba</button></form>{% endif %}
+{% if not smtp_ok %}<div class="callout" style="margin:16px 0 0">{{ ic('alert') }}<div>El correo saliente del servidor aún no está configurado: los avisos no se enviarán hasta que se active.</div></div>{% endif %}
+</div>
+
+<div class="card"><h2>{{ ic('cal') }}Calendario</h2>
+<p class="mut" style="font-size:14px">Suscríbete a este enlace desde Google Calendar o Apple Calendar para ver tus renovaciones. Es privado: no lo compartas.</p>
+<code class="url">{{ ics_url }}</code>
+<form method="post" action="/ajustes/calendario" data-confirm="El enlace actual dejará de funcionar. ¿Continuar?"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="sec small">Generar enlace nuevo</button></form></div>
+
+<div class="card"><h2>{{ ic('key') }}Cambiar contraseña</h2>
+<form method="post" action="/ajustes/password"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label style="margin-top:0">Contraseña actual</label><input name="old_password" type="password" autocomplete="current-password" required>
+<label>Nueva contraseña <span class="mut2">(mínimo 10)</span></label><input name="new_password" type="password" autocomplete="new-password" minlength="10" maxlength="200" required>
+<p style="margin-top:18px"><button>Cambiar contraseña</button></p></form></div>
+
+<div class="card"><h2>{{ ic('globe') }}Tipos de cambio y datos</h2>
+<p class="mut" style="font-size:14px">{% if info and info.rate_date %}Tipos del BCE de {{ info.rate_date|dt }}, actualizados cada día. Si la fuente no responde se usan los últimos conocidos.{% else %}Aún no se han descargado tipos de cambio.{% endif %}</p>
+<p style="margin-top:14px"><a class="btn sec small" href="/exportar.csv">{{ ic('down') }}Exportar mis datos (CSV)</a></p></div>
+</div>
+{% endblock %}

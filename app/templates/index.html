@@ -1,0 +1,72 @@
+{% extends "base.html" %}{% set active = 'panel' %}
+{% block body %}{% from "_ui.html" import ic, av %}
+{% set B = dash.base %}{% set n = dash.active|length %}
+<div class="page-head"><div><h1>Hola, {{ user.username }}</h1>
+<p class="sub">{{ hoy_txt }} · {{ n }} suscripci{{ 'ón activa' if n == 1 else 'ones activas' }}{% if dash.n_paused %} · {{ dash.n_paused }} en pausa{% endif %}</p></div></div>
+
+{% if not dash.subs %}
+<div class="card empty">
+<svg class="art" viewBox="0 0 160 110" fill="none" aria-hidden="true"><rect x="22" y="38" width="116" height="58" rx="12" fill="#171c33" stroke="rgba(255,255,255,.12)"/><rect x="14" y="26" width="132" height="58" rx="12" fill="#1c2240" stroke="rgba(255,255,255,.14)"/><rect x="6" y="14" width="148" height="58" rx="12" fill="url(#g)" opacity=".95"/><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7c5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect x="20" y="30" width="44" height="8" rx="4" fill="#fff" opacity=".85"/><rect x="20" y="46" width="28" height="6" rx="3" fill="#fff" opacity=".5"/><circle cx="130" cy="44" r="10" fill="#fff" opacity=".25"/></svg>
+<h2>Aún no hay nada por aquí</h2><p>Añade tu primera suscripción y verás cuánto gastas al año.</p>
+<p style="margin-top:18px"><a class="btn" href="/suscripciones/nueva">{{ ic('plus') }}Añadir suscripción</a></p></div>
+{% else %}
+
+{% if dash.missing %}<div class="callout">{{ ic('alert') }}<div>Falta el tipo de cambio de <b>{{ dash.missing|map(attribute='currency')|unique|join(', ') }}</b>: {{ dash.missing|length }} suscripci{{ 'ón no cuenta' if dash.missing|length == 1 else 'ones no cuentan' }} en los totales hasta que se actualice.</div></div>{% endif %}
+
+<div class="hero2">
+<div class="hero-card">
+{% set t = dash.total_annual|money(B) %}{% set pt = t.rsplit(',', 1) %}
+<div class="lbl">Gastas al año</div>
+<div class="big">{{ pt[0] }}<small>,{{ pt[1] }}</small></div>
+<div class="mini">
+<div><b>{{ dash.total_monthly|money(B) }}</b><span>al mes (media)</span></div>
+<div><b>{{ dash.next30|money(B) }}</b><span>próximos 30 días</span></div>
+<div><b>{{ n }}</b><span>activa{{ '' if n == 1 else 's' }}</span></div>
+</div></div>
+{% if dash.upcoming %}{% set nx = dash.upcoming[0] %}
+<div class="card next-card"><div><div class="lbl">Próximo cobro</div>
+<div class="who">{{ av(nx.name, 'lg') }}<div><div class="nm">{{ nx.name }}</div><span class="pill {{ 'soon' if nx.days_left <= 7 }}">{{ ic('clock') }}{{ 'hoy' if nx.days_left == 0 else 'mañana' if nx.days_left == 1 else 'en ' ~ nx.days_left ~ ' días' }}</span></div></div></div>
+<div class="when"><span class="mut">{{ nx.next|corta }}</span><b>{{ nx.amount_cents|money(nx.currency) }}</b></div></div>
+{% endif %}
+</div>
+
+{% if dash.trials %}<div class="callout">{{ ic('alert') }}<div><b>Pruebas gratuitas en curso:</b>
+{% for s in dash.trials %}{{ s.name }} (termina el {{ s.trial_end|dt }}){{ ', ' if not loop.last }}{% endfor %}. Cancela antes si no quieres que se cobre.</div></div>{% endif %}
+
+<div class="card">
+<div class="chart-head"><h2 style="margin:0">{{ ic('chart') }}Lo que pagarás los próximos meses</h2>
+<div class="chips">{% for k in (3, 6, 12) %}<a href="/?meses={{ k }}" class="{{ 'on' if dash.months == k }}">{{ k }} meses</a>{% endfor %}</div></div>
+{% set vals = dash.projection|map(attribute=1)|list %}
+<div class="cols" style="grid-template-columns:repeat({{ dash.projection|length }},minmax(0,1fr))">{% for (y, m), v in dash.projection %}
+<div class="col {{ 'top' if v == mmax and v > 0 }}" title="{{ meses_es[m-1] }} {{ y }}: {{ v|money(B) }}"><span class="bw"><span class="v">{{ v|money(B) if dash.months <= 6 else v|money0(B) }}</span>
+<i style="--h:{{ (v / mmax)|float|round(3) }};animation-delay:{{ loop.index0 * 60 }}ms"></i></span>
+<span class="mn">{{ meses_es[m-1] if dash.months <= 6 else meses_es[m-1][:3] }}{% if m == 1 or loop.first and dash.months > 6 %} {{ y }}{% endif %}</span></div>{% endfor %}</div>
+<div class="foot"><span>Total de estos {{ dash.months }} meses: <b>{{ vals|sum|money(B) }}</b></span>{% if dash.rest_of_month %}<span>Lo que queda de este mes: <b>{{ dash.rest_of_month|money(B) }}</b></span>{% endif %}</div>
+{% if dash.proj_skipped %}<p class="help">{{ dash.proj_skipped }} suscripci{{ 'ón sin tipo de cambio no se incluye' if dash.proj_skipped == 1 else 'ones sin tipo de cambio no se incluyen' }}.</p>{% endif %}
+</div>
+
+<div class="grid">
+<div class="card"><h2>{{ ic('clock') }}Próximas renovaciones</h2>
+{% if dash.upcoming %}<ul class="list">{% for s in dash.upcoming %}
+<li><div class="l">{{ av(s.name) }}<div class="t"><div class="nm">{{ s.name }}</div><small>{{ s.next|corta }} · {{ s.period_text }}</small></div></div>
+<div class="amt">{{ s.amount_cents|money(s.currency) }}<br><span class="pill {{ 'soon' if s.days_left <= 7 }}">{{ 'hoy' if s.days_left == 0 else 'mañana' if s.days_left == 1 else 'en ' ~ s.days_left ~ ' días' }}</span></div></li>
+{% endfor %}</ul>{% else %}<p class="mut">No hay suscripciones activas.</p>{% endif %}</div>
+
+<div class="card"><h2>{{ ic('pie') }}Gasto anual por categoría</h2>
+{% if donut %}<div class="donut-wrap" style="justify-content:center"><div class="donut">
+<svg viewBox="0 0 42 42" role="img" aria-label="Gasto por categoría"><circle cx="21" cy="21" r="15.9155" stroke="rgba(255,255,255,.06)"/>
+{% for g in donut %}<circle cx="21" cy="21" r="15.9155" stroke="{{ g.color }}" stroke-dasharray="{{ g.seg }} {{ 100 - g.seg }}" stroke-dashoffset="{{ g.off }}" style="animation-delay:{{ loop.index0 * 90 }}ms"/>{% endfor %}</svg>
+<div class="c"><b>{{ dash.total_annual|money0(B) }}</b><span>al año</span></div></div>
+<ul class="legend">{% for g in donut %}<li><i style="background:{{ g.color }}"></i><span class="n">{{ g.name }}</span><span class="p">{{ '<1' if g.pct < 1 else g.pct|round|int }}%</span></li>{% endfor %}</ul></div>
+{% else %}<p class="mut">Sin datos todavía.</p>{% endif %}</div>
+
+<div class="card"><h2>{{ ic('top') }}Lo que más cuesta al año</h2>
+{% if dash.top %}<ul class="list">{% for s in dash.top %}
+<li><div class="l">{{ av(s.name) }}<div class="t"><div class="nm">{{ s.name }}</div><small>{{ s.amount_cents|money(s.currency) }} {{ s.period_text }}</small></div></div>
+<div class="amt">{{ s.annual|money(B) }}</div></li>{% endfor %}</ul>
+{% else %}<p class="mut">Sin datos todavía.</p>{% endif %}</div>
+</div>
+{% endif %}
+
+<p class="help" style="text-align:center;margin-top:8px">{% if info and info.rate_date %}Tipos de cambio del BCE de {{ info.rate_date|dt }}{% else %}Tipos de cambio aún no disponibles{% endif %}</p>
+{% endblock %}

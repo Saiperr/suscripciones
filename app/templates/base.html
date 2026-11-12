@@ -1,0 +1,41 @@
+{% from "_ui.html" import ic, sprite %}<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#080a11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Suscripciones">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/static/icon-192.png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<title>{% block title %}Panel{% endblock %} · Suscripciones</title>
+<link rel="stylesheet" href="/static/style.css?v={{ asset_v }}">
+<script src="/static/app.js?v={{ asset_v }}" defer></script>
+</head><body>
+{{ sprite() }}
+<nav class="top"><div class="wrap">
+<a class="logo" href="/"><img class="mark" src="/static/icon-192.png" alt="" width="30" height="30">Suscripciones</a>
+{% if user %}<ul class="links">
+<li><a href="/" class="{{ 'on' if active == 'panel' }}">{{ ic('home') }}Panel</a></li>
+<li><a href="/suscripciones" class="{{ 'on' if active == 'lista' }}">{{ ic('list') }}Suscripciones</a></li>
+<li><a href="/ajustes" class="{{ 'on' if active == 'ajustes' }}">{{ ic('gear') }}Ajustes</a></li></ul>
+<div class="userbox"><a class="btn small nav-add" href="/suscripciones/nueva">{{ ic('plus') }}Nueva</a>
+<span class="me" title="{{ user.username }}">{{ user.username[:1]|upper }}</span>
+<form method="post" action="/salir"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="sec small" title="Cerrar sesión" aria-label="Cerrar sesión">{{ ic('out') }}</button></form></div>
+{% endif %}
+</div></nav>
+{% if flash %}<div class="toast {{ flash.kind }}" role="status">{{ ic('alert' if flash.kind == 'err' else 'check') }}<span>{{ flash.msg }}</span><button class="sec" type="button" data-close aria-label="Cerrar">×</button></div>{% endif %}
+<main><div class="wrap">
+{% block body %}{% endblock %}
+</div></main>
+{% if user %}
+<nav class="tabs" aria-label="Navegación">
+<a href="/" class="{{ 'on' if active == 'panel' }}">{{ ic('home') }}Panel</a>
+<a href="/suscripciones" class="{{ 'on' if active == 'lista' }}">{{ ic('list') }}Lista</a>
+<a href="/suscripciones/nueva" class="plus" aria-label="Añadir suscripción">{{ ic('plus') }}</a>
+<a href="/ajustes" class="{{ 'on' if active == 'ajustes' }}">{{ ic('gear') }}Ajustes</a>
+</nav>
+{% endif %}
+</body></html>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Entrar{% endblock %}
+{% block body %}{% from "_ui.html" import ic %}
+<div class="auth">
+<div class="logo-big"><img src="/static/icon-192.png" alt="" width="68" height="68"></div>
+<h1>Bienvenido</h1><p class="sub">Controla qué pagas, cuándo se renueva y cuánto gastas al año.</p>
+<div class="card"><form method="post" action="/login"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label style="margin-top:0">Usuario</label><input name="username" autocomplete="username" autocapitalize="none" required>
+<label>Contraseña</label><input name="password" type="password" autocomplete="current-password" required>
+<p style="margin-top:20px"><button style="width:100%">Entrar</button></p></form></div>
+<p class="mut" style="text-align:center">¿Sin cuenta? <a href="/registro">Crear una</a> <span class="mut">· necesitas un código de invitación</span></p>
+<ul class="feat"><li>{{ ic('bell') }}Avisos por email antes de cada renovación</li><li>{{ ic('globe') }}Importes en cualquier moneda, convertidos al cambio del día</li><li>{{ ic('cal') }}Calendario con todas tus renovaciones</li></ul>
+</div>
+{% endblock %}

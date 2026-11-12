@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% set active = 'lista' %}{% block title %}{{ 'Editar' if sub and sub.id else 'Nueva' }} suscripción{% endblock %}
+{% block body %}{% from "_ui.html" import ic, av %}
+<div class="page-head"><div><h1>{{ 'Editar suscripción' if sub and sub.id else 'Nueva suscripción' }}</h1>
+<p class="sub">{{ 'Los cambios de precio se guardan en el historial.' if sub and sub.id else 'Indica cuánto pagas y cuándo es el cobro.' }}</p></div></div>
+<form method="post" data-preview action="{{ '/suscripciones/' ~ sub.id ~ '/editar' if sub and sub.id else '/suscripciones/nueva' }}">
+<input type="hidden" name="csrf_token" value="{{ csrf }}">
+<div class="formgrid"><div>
+<div class="card"><h2>Qué pagas</h2>
+<label style="margin-top:0">Nombre</label><input name="name" value="{{ sub.name or '' }}" maxlength="80" required placeholder="Netflix, dominio Porkbun…" autocomplete="off">
+<label>Categoría</label><select name="category">{% for c in cats %}<option {{ 'selected' if c == sub.category }}>{{ c }}</option>{% endfor %}</select>
+<label>Importe</label><div class="group"><input name="amount" inputmode="decimal" value="{{ sub.amount_text or '' }}" required placeholder="0,00" autocomplete="off">
+<select name="currency" aria-label="Moneda">{% for c in currencies %}<option {{ 'selected' if c == sub.currency }}>{{ c }}</option>{% endfor %}</select></div></div>
+
+<div class="card"><h2>Cuándo se cobra</h2>
+<div class="row"><div><label style="margin-top:0">Se cobra cada</label><input name="period_n" type="number" min="1" max="365" value="{{ sub.period_n or 1 }}" required></div>
+<div><label style="margin-top:0">Unidad</label><select name="period_unit">{% for k, v in units.items() %}<option value="{{ k }}" {{ 'selected' if k == sub.period_unit }}>{{ v }}{{ 'es' if k == 'month' }}{{ 's' if k != 'month' }}</option>{% endfor %}</select></div></div>
+<div class="row"><div><label>Fecha de un cobro</label><input name="start_date" type="date" value="{{ sub.start_date or '' }}" required></div>
+<div><label>Fin de prueba gratuita <span class="mut2">(opcional)</span></label><input name="trial_end" type="date" value="{{ sub.trial_end or '' }}"></div></div>
+<p class="help">El día del cobro se repite según la periodicidad. Si es el 31, en los meses cortos se cobra el último día.</p></div>
+
+<div class="card"><h2>Detalles <span class="mut" style="font-weight:400">(opcional)</span></h2>
+<label style="margin-top:0">Método de pago</label><input name="payment_method" value="{{ sub.payment_method or '' }}" maxlength="60" placeholder="Visa 1234, PayPal…">
+<label>Enlace para cancelar</label><input name="cancel_url" type="url" value="{{ sub.cancel_url or '' }}" maxlength="300" placeholder="https://…">
+<label>Notas</label><textarea name="notes" rows="2" maxlength="500">{{ sub.notes or '' }}</textarea></div>
+
+<div class="actions"><button>{{ ic('check') }}Guardar</button><a class="btn sec" href="/suscripciones">Cancelar</a></div>
+</div>
+
+<aside><div class="card preview"><div class="lbl" style="margin-bottom:12px">Vista previa</div>
+<div class="who"><span class="av lg" id="pv-av">?</span><div><div class="pn" id="pv-name">Sin nombre</div><div class="mut" style="font-size:14px" id="pv-per">—</div></div></div>
+<div class="rowp"><span class="mut">Cada mes</span><b id="pv-month">—</b></div>
+<div class="rowp"><span class="mut">Cada año</span><b id="pv-year">—</b></div>
+{% if hist %}<div style="margin-top:14px"><div class="lbl">Historial de precio</div><ul class="list">{% for h in hist %}
+<li class="hist"><span>{{ h.changed_on|dt }}</span><span class="amt">{{ h.amount_cents|money(h.currency) }}</span></li>{% endfor %}</ul></div>{% endif %}
+</div></aside></div></form>
+{% endblock %}

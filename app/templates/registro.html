@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Crear cuenta{% endblock %}
+{% block body %}
+<div class="auth">
+<div class="logo-big"><img src="/static/icon-192.png" alt="" width="68" height="68"></div>
+<h1>Crear cuenta</h1><p class="sub">El registro es solo con código de invitación.</p>
+<div class="card"><form method="post" action="/registro"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label style="margin-top:0">Código de invitación</label><input name="invite" autocomplete="off" required>
+<label>Usuario <span class="mut2">(letras, números, . _ -)</span></label><input name="username" autocomplete="username" autocapitalize="none" required minlength="3" maxlength="32">
+<label>Contraseña <span class="mut2">(mínimo 10 caracteres)</span></label><input name="password" type="password" autocomplete="new-password" required minlength="10" maxlength="200">
+<p style="margin-top:20px"><button style="width:100%">Crear cuenta</button></p></form></div>
+<p class="mut" style="text-align:center">¿Ya tienes cuenta? <a href="/login">Entrar</a></p>
+</div>
+{% endblock %}

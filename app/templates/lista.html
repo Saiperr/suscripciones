@@ -1,0 +1,34 @@
+{% extends "base.html" %}{% set active = 'lista' %}{% block title %}Suscripciones{% endblock %}
+{% block body %}{% from "_ui.html" import ic, av %}
+<div class="page-head"><div><h1>Suscripciones</h1><p class="sub">{{ total }} en total</p></div>
+<div class="actions" style="margin:0"><a class="btn sec" href="/exportar.csv">{{ ic('down') }}CSV</a><a class="btn" href="/suscripciones/nueva">{{ ic('plus') }}Añadir</a></div></div>
+<div class="toolbar">
+<div class="chips">
+<a href="?estado=activa" class="{{ 'on' if estado == 'activa' }}">Activas {{ counts.activa }}</a>
+<a href="?estado=pausada" class="{{ 'on' if estado == 'pausada' }}">En pausa {{ counts.pausada }}</a>
+<a href="?estado=cancelada" class="{{ 'on' if estado == 'cancelada' }}">Canceladas {{ counts.cancelada }}</a>
+<a href="?estado=todas" class="{{ 'on' if estado == 'todas' }}">Todas</a></div>
+<div class="search">{{ ic('search') }}<input type="search" placeholder="Buscar…" data-filter aria-label="Buscar suscripción"></div></div>
+<div id="subs">
+{% for s in subs %}
+<div class="card sub-card {{ 'dim' if s.status != 'activa' }}" data-name="{{ s.name|lower }} {{ s.category|lower }}">
+{{ av(s.name, 'lg') }}
+<div class="body">
+<div class="head"><div style="min-width:0"><div class="name">{{ s.name }}</div>
+<div class="meta">{{ s.category }} · {{ s.period_text }}{% if s.payment_method %} · {{ s.payment_method }}{% endif %}</div></div>
+<div class="price">{{ s.amount_cents|money(s.currency) }}{% if s.converted %}<small>≈ {{ s.annual|money(base) }}/año</small>{% endif %}</div></div>
+<div class="tags">
+{% if s.status == 'activa' %}<span class="pill {{ 'soon' if s.days_left <= 7 }}">{{ ic('cal') }}{{ s.next|corta }}{% if s.days_left <= 7 %} · {{ 'hoy' if s.days_left == 0 else 'mañana' if s.days_left == 1 else 'en ' ~ s.days_left ~ ' días' }}{% endif %}</span>{% else %}<span class="pill off">{{ s.status|capitalize }}</span>{% endif %}
+{% if s.in_trial %}<span class="pill trial">Prueba hasta {{ s.trial_end|dt }}</span>{% endif %}
+{% if s.cancel_url %}<a class="pill" href="{{ s.cancel_url }}" target="_blank" rel="noopener noreferrer">Cancelar {{ ic('ext') }}</a>{% endif %}</div>
+{% if s.notes %}<p class="help" style="margin-top:8px">{{ s.notes }}</p>{% endif %}
+<div class="actions">
+<a class="btn sec small" href="/suscripciones/{{ s.id }}/editar">{{ ic('edit') }}Editar</a>
+{% for st, label, icon in (('pausada','Pausar','pause'),('activa','Reactivar','play'),('cancelada','Cancelada','stop')) if st != s.status %}
+<form class="inline" method="post" action="/suscripciones/{{ s.id }}/estado"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="estado" value="{{ st }}"><button class="sec small">{{ ic(icon) }}{{ label }}</button></form>{% endfor %}
+<form class="inline" method="post" action="/suscripciones/{{ s.id }}/borrar" data-confirm="¿Eliminar «{{ s.name }}» definitivamente?"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="danger small" aria-label="Eliminar {{ s.name }}">{{ ic('trash') }}</button></form>
+</div></div></div>
+{% else %}<div class="card empty"><h2>No hay suscripciones en esta vista</h2><p>Prueba con otro filtro o añade una nueva.</p></div>{% endfor %}
+</div>
+<div class="card empty" id="nomatch" hidden><h2>Sin resultados</h2><p>Ninguna suscripción coincide con tu búsqueda.</p></div>
+{% endblock %}

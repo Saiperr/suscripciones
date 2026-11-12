@@ -1,0 +1,10 @@
+services:
+  suscripciones:
+    build: .
+    container_name: suscripciones
+    restart: unless-stopped
+    ports:
+      - "8084:8000"
+    env_file: .env
+    volumes:
+      - ./data:/data
