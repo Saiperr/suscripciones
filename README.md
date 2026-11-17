@@ -10,6 +10,19 @@ Gestor de suscripciones: qué pagas, cuándo se renueva y cuánto gastas al año
 - **Multiusuario** con registro por código de invitación y datos totalmente separados por usuario.
 - Calendario ICS privado, exportación a CSV, historial de cambios de precio.
 
+## Capturas
+Capturas con datos de ejemplo.
+
+![Panel](docs/capturas/inicio.png)
+*Panel: gasto anual, próximo cobro, previsión de los próximos meses y reparto por categorías.*
+
+![Lista de suscripciones](docs/capturas/lista.png)
+*Lista: filtros por estado, orden, búsqueda y acciones rápidas en cada suscripción.*
+
+<img src="docs/capturas/movil.png" alt="Versión móvil" width="260">
+
+*En el móvil funciona como app instalable (PWA).*
+
 ## Pila
 Python 3.12 · FastAPI · Jinja2 · SQLite · Docker. Sin JavaScript de terceros ni fuentes externas.
 
