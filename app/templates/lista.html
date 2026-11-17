@@ -8,10 +8,11 @@
 <a href="?estado=pausada" class="{{ 'on' if estado == 'pausada' }}">En pausa {{ counts.pausada }}</a>
 <a href="?estado=cancelada" class="{{ 'on' if estado == 'cancelada' }}">Canceladas {{ counts.cancelada }}</a>
 <a href="?estado=todas" class="{{ 'on' if estado == 'todas' }}">Todas</a></div>
-<div class="search">{{ ic('search') }}<input type="search" placeholder="Buscar…" data-filter aria-label="Buscar suscripción"></div></div>
+<div class="tools"><select class="sortsel" data-sort aria-label="Ordenar por"><option value="next">Próximo cobro</option><option value="annual">Más caras al año</option><option value="name">Nombre (A-Z)</option></select>
+<div class="search">{{ ic('search') }}<input type="search" placeholder="Buscar…  ( / )" data-filter aria-label="Buscar suscripción"></div></div></div>
 <div id="subs">
 {% for s in subs %}
-<div class="card sub-card {{ 'dim' if s.status != 'activa' }}" data-name="{{ s.name|lower }} {{ s.category|lower }}">
+<div class="card sub-card {{ 'dim' if s.status != 'activa' }}" data-name="{{ s.name|lower }} {{ s.category|lower }}" data-title="{{ s.name|lower }}" data-next="{{ s.next.isoformat() if s.next else '9999-12-31' }}" data-annual="{{ s.annual if s.annual is not none else 0 }}">
 {{ av(s.name, 'lg') }}
 <div class="body">
 <div class="head"><div style="min-width:0"><div class="name">{{ s.name }}</div>

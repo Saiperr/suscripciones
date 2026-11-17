@@ -59,6 +59,33 @@ document.addEventListener("submit", function (e) {
   f.addEventListener("input", update); f.addEventListener("change", update); update();
 })();
 
+(function () {  // ordenar la lista (se recuerda la última elección)
+  var sel = document.querySelector("[data-sort]"), box = document.getElementById("subs");
+  if (!sel || !box) return;
+  function sort() {
+    var k = sel.value, cards = Array.prototype.slice.call(box.querySelectorAll(".sub-card"));
+    cards.sort(function (a, b) {
+      if (k === "annual") return (parseFloat(b.getAttribute("data-annual")) || 0) - (parseFloat(a.getAttribute("data-annual")) || 0);
+      if (k === "name") return a.getAttribute("data-title").localeCompare(b.getAttribute("data-title"), "es");
+      var x = a.getAttribute("data-next"), y = b.getAttribute("data-next");
+      return x < y ? -1 : x > y ? 1 : a.getAttribute("data-title").localeCompare(b.getAttribute("data-title"), "es");
+    });
+    cards.forEach(function (c) { box.appendChild(c); });
+  }
+  try { var s = localStorage.getItem("susc-sort"); if (s && sel.querySelector('option[value="' + s + '"]')) { sel.value = s; sort(); } } catch (e) {}
+  sel.addEventListener("change", function () { sort(); try { localStorage.setItem("susc-sort", sel.value); } catch (e) {} });
+})();
+
+(function () {  // atajos de teclado: «/» buscar, «n» nueva suscripción
+  if (!document.querySelector("nav.tabs")) return;   // solo con sesión iniciada
+  document.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (e.ctrlKey || e.metaKey || e.altKey || (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) return;
+    if (e.key === "/") { var f = document.querySelector("[data-filter]"); if (f) { e.preventDefault(); f.focus(); } else { location.href = "/suscripciones"; } }
+    else if (e.key === "n" || e.key === "N") { location.href = "/suscripciones/nueva"; }
+  });
+})();
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     navigator.serviceWorker.register("/sw.js").catch(function () {});

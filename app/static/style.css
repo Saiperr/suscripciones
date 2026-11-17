@@ -214,3 +214,11 @@ nav.tabs{display:none}
   nav.tabs a.plus .i{width:26px;height:26px;stroke-width:2.2}
   .toast{top:calc(68px + env(safe-area-inset-top))}
 }
+
+/* ---------- novedades: transición entre páginas, ordenar y atajos ---------- */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+.tools{display:flex;gap:10px;align-items:center;flex:1;justify-content:flex-end;flex-wrap:wrap;min-width:0}
+.sortsel{width:auto;flex:none;max-width:100%;padding-right:36px}
+.tools .search{min-width:160px}
+@media(max-width:640px){.tools{flex-basis:100%;justify-content:stretch}.sortsel{flex:1}}

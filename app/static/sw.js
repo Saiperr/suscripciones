@@ -1,6 +1,6 @@
 // Service worker mínimo: guarda solo ficheros estáticos para poder instalar la app y mostrar una pantalla sin conexión.
 // Las páginas con datos del usuario NO se guardan en caché.
-const V = "susc-v2";
+const V = "susc-v3";
 const SHELL = ["/static/style.css", "/static/app.js", "/static/offline.html", "/static/icon-192.png"];
 // Sube V cuando cambies estos ficheros para limpiar cachés antiguas.
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
