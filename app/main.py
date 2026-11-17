@@ -24,9 +24,6 @@ app.mount("/static", StaticFiles(directory=os.path.join(HERE, "static")), name="
 templates = Jinja2Templates(directory=os.path.join(HERE, "templates"))
 templates.env.filters["money"] = fmt
 templates.env.filters["money0"] = lambda c, cur: fmt((Decimal(c) / 100).quantize(Decimal(1), ROUND_HALF_UP) * 100, cur).replace(",00", "")
-AVATARS = [("#7c5cff", "#4f8cf7"), ("#22d3ee", "#3b82f6"), ("#f472b6", "#c026d3"), ("#fb923c", "#ef4444"),
-           ("#2dd4bf", "#0ea5e9"), ("#a78bfa", "#ec4899"), ("#fbbf24", "#f97316"), ("#60a5fa", "#6366f1")]
-templates.env.filters["avgrad"] = lambda n: "linear-gradient(135deg,%s,%s)" % AVATARS[sum((i + 7) * ord(ch) for i, ch in enumerate(str(n))) * 37 % len(AVATARS)]
 templates.env.filters["hue"] = lambda n: sum((i + 7) * ord(ch) for i, ch in enumerate(str(n))) * 37 % 360
 templates.env.filters["initial"] = lambda n: (re.sub(r"[^\wÁÉÍÓÚÜÑáéíóúüñ]", "", str(n)) or "?")[0].upper()
 templates.env.filters["fecha"] = lambda x: x.strftime("%d/%m/%Y") if x else ""
@@ -107,7 +104,7 @@ def go(path):
     return RedirectResponse(path, status_code=303)
 
 
-DONUT = ["#7c5cff", "#22d3ee", "#34d399", "#fbbf24", "#f472b6", "#60a5fa", "#fb923c", "#a3e635", "#c084fc", "#2dd4bf", "#f87171", "#94a3b8"]
+DONUT = ["#22d3ee", "#3fb97f", "#e0a83a", "#e5645e", "#6e9bd8", "#a78bba", "#d98a5c", "#8fb86a", "#5fb3a8", "#c77e9e", "#8e96a3", "#646c79"]
 DIAS_ES = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 
 

@@ -1,5 +1,5 @@
 {% macro ic(n) %}<svg class="i" aria-hidden="true"><use href="#i-{{ n }}"/></svg>{% endmacro %}
-{% macro av(name, cls='') %}<span class="av {{ cls }}" aria-hidden="true" style="background:{{ name|avgrad }}">{{ name|initial }}</span>{% endmacro %}
+{% macro av(name, cls='') %}<span class="av {{ cls }}" aria-hidden="true">{{ name|initial }}</span>{% endmacro %}
 {% macro sprite() %}<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
 <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></symbol>
 <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>

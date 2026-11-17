@@ -1,7 +1,7 @@
 """Genera los iconos de la PWA sin dependencias (PNG escrito a mano)."""
 import math, struct, zlib, sys, os
 
-A, B = (124, 92, 255), (34, 211, 238)     # violeta -> cian (misma paleta que la app)
+BG, FG = (34, 211, 238), (6, 34, 42)     # cian plano y símbolo oscuro (misma paleta que la app)
 
 
 def shade(x, y, size, maskable, ss=3):
@@ -18,8 +18,7 @@ def shade(x, y, size, maskable, ss=3):
                 inside = (u - cx) ** 2 + (v - cy) ** 2 <= r * r
             if not inside:
                 continue
-            t = (u + v) / 2
-            col = [A[k] + (B[k] - A[k]) * t for k in range(3)]
+            col = list(BG)
             s = 0.78 if maskable else 1.0                      # zona segura para maskable
             du, dv = (u - .5) / s, (v - .5) / s
             d = math.hypot(du, dv)
@@ -31,7 +30,7 @@ def shade(x, y, size, maskable, ss=3):
             px, py = du - ax, dv - ay
             head = abs(px) + abs(py) <= 0.085 and px >= -0.02 - abs(py)
             if ring or dot or head:
-                col = [255, 255, 255]
+                col = list(FG)
             for k in range(3):
                 acc[k] += col[k]
             acc[3] += 255

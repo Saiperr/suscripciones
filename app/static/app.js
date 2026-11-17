@@ -42,14 +42,10 @@ document.addEventListener("submit", function (e) {
   function money(v, cur) {
     return v.toLocaleString("es-ES", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " " + (SYM[cur] || cur);
   }
-  var AV = [["#7c5cff", "#4f8cf7"], ["#22d3ee", "#3b82f6"], ["#f472b6", "#c026d3"], ["#fb923c", "#ef4444"],
-            ["#2dd4bf", "#0ea5e9"], ["#a78bfa", "#ec4899"], ["#fbbf24", "#f97316"], ["#60a5fa", "#6366f1"]];
-  function grad(n) { var h = 0; for (var i = 0; i < n.length; i++) h += (i + 7) * n.charCodeAt(i); var c = AV[(h * 37) % AV.length]; return "linear-gradient(135deg," + c[0] + "," + c[1] + ")"; }
   function update() {
     var name = val("name").trim(), cur = val("currency"), a = amount(val("amount")), n = parseInt(val("period_n"), 10), u = val("period_unit");
     var av = $("pv-av");
     av.textContent = (name.replace(/[^\p{L}\p{N}]/gu, "")[0] || "?").toUpperCase();
-    av.style.background = grad(name || "?");
     $("pv-name").textContent = name || "Sin nombre";
     var ok = n >= 1 && UN[u];
     $("pv-per").textContent = ok ? (a ? money(a, cur) + " " : "") + (n === 1 ? "cada " + UN[u][0] : "cada " + n + " " + UN[u][1]) : "—";
